@@ -13,6 +13,7 @@ import { Wishlist } from '@/components/Wishlist';
 import { CartProvider } from '@/contexts/CartContext';
 import { WishlistProvider } from '@/contexts/WishlistContext';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { SearchProvider } from '@/contexts/SearchContext';
 
 export default function Home() {
   const [showCart, setShowCart] = useState(false);
@@ -32,52 +33,54 @@ export default function Home() {
 
   return (
     <AuthProvider>
-      <WishlistProvider>
-        <CartProvider>
-          <div className="min-h-screen bg-gray-50">
-            <Header 
-              onCartClick={() => setShowCart(true)}
-              onAccountClick={() => setShowAccountHandler(true)}
-              onWishlistClick={() => setShowWishlist(true)}
-              onCategorySelect={handleCategorySelect}
-            />
-            <Hero />
-            <div id="products-section">
-              <ProductGrid 
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
+      <SearchProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <div className="min-h-screen bg-gray-50">
+              <Header 
+                onCartClick={() => setShowCart(true)}
+                onAccountClick={() => setShowAccountHandler(true)}
+                onWishlistClick={() => setShowWishlist(true)}
+                onCategorySelect={handleCategorySelect}
               />
+              <Hero />
+              <div id="products-section">
+                <ProductGrid 
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                />
+              </div>
+              <Footer />
+              
+              <Cart 
+                isOpen={showCart} 
+                onClose={() => setShowCart(false)}
+                onCheckout={() => {
+                  setShowCart(false);
+                  setShowCheckout(true);
+                }}
+              />
+              
+              <Wishlist 
+                isOpen={showWishlist} 
+                onClose={() => setShowWishlist(false)}
+              />
+              
+              <Checkout 
+                isOpen={showCheckout} 
+                onClose={() => setShowCheckout(false)}
+              />
+              
+              <AccountHandler
+                isOpen={showAccountHandler}
+                onClose={() => setShowAccountHandler(false)}
+              />
+              
+              <FloatingCart onClick={() => setShowCart(true)} />
             </div>
-            <Footer />
-            
-            <Cart 
-              isOpen={showCart} 
-              onClose={() => setShowCart(false)}
-              onCheckout={() => {
-                setShowCart(false);
-                setShowCheckout(true);
-              }}
-            />
-            
-            <Wishlist 
-              isOpen={showWishlist} 
-              onClose={() => setShowWishlist(false)}
-            />
-            
-            <Checkout 
-              isOpen={showCheckout} 
-              onClose={() => setShowCheckout(false)}
-            />
-            
-            <AccountHandler
-              isOpen={showAccountHandler}
-              onClose={() => setShowAccountHandler(false)}
-            />
-            
-            <FloatingCart onClick={() => setShowCart(true)} />
-          </div>
-        </CartProvider>
-      </WishlistProvider>
+          </CartProvider>
+        </WishlistProvider>
+      </SearchProvider>
     </AuthProvider>
   );
 }

@@ -1,11 +1,13 @@
 'use client';
 
-import { ShoppingCart, Search, User, Heart, Phone } from 'lucide-react';
+import { useState } from 'react';
+import { ShoppingCart, Search, User, Heart, Phone, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSearch } from '@/contexts/SearchContext';
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -18,8 +20,27 @@ export function Header({ onCartClick, onAccountClick, onWishlistClick, onCategor
   const { state } = useCart();
   const { state: wishlistState } = useWishlist();
   const { state: authState } = useAuth();
+  const { state: searchState, setSearchQuery, clearSearch } = useSearch();
+  const [searchInput, setSearchInput] = useState('');
+  
   const itemCount = state.items.reduce((sum, item) => sum + item.quantity, 0);
   const wishlistCount = wishlistState.items.length;
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    setSearchQuery(value);
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput('');
+    clearSearch();
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchQuery(searchInput);
+  };
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-40">
@@ -62,14 +83,27 @@ export function Header({ onCartClick, onAccountClick, onWishlistClick, onCategor
 
           {/* Search bar */}
           <div className="flex-1 max-w-lg mx-8">
-            <div className="relative">
+            <form onSubmit={handleSearchSubmit} className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
                 type="text"
                 placeholder="Search medicines, vitamins, health products..."
-                className="pl-10 pr-4 py-2 w-full"
+                className="pl-10 pr-10 py-2 w-full"
+                value={searchInput}
+                onChange={handleSearchChange}
               />
-            </div>
+              {searchInput && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-gray-100"
+                  onClick={handleClearSearch}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+            </form>
           </div>
 
           {/* Right side actions */}

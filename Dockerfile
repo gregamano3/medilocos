@@ -8,6 +8,10 @@ RUN npm ci --only=production
 COPY . .
 RUN npm run build
 
+# Install serve to serve static files
+RUN npm install -g serve
+
 EXPOSE 9012
 
-CMD ["npm", "start"]
+# Serve the static files from the out directory
+CMD ["serve", "-s", "out", "-l", "9012"]
